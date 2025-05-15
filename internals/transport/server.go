@@ -6,7 +6,10 @@ import (
 )
 
 func NewServer() {
-	http.HandleFunc("/", handler)
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", handler)
+
 	fmt.Println("starting server at :8080")
 	http.ListenAndServe(":8080", nil)
 }
