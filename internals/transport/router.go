@@ -6,7 +6,7 @@ import (
 )
 
 // GET /api/forms
-func handler(w http.ResponseWriter, r *http.Request) {
+func getForms(w http.ResponseWriter, r *http.Request) {
 	key := r.FormValue("key")
 
 	if key != "" {
@@ -17,13 +17,19 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 // POST /api/forms
+func postForms(w http.ResponseWriter, r *http.Request) {}
 
 // GET /api/forms/{id}
+func getFormById(w http.ResponseWriter, r *http.Request) {}
 
 // GET /api/forms/{id}/schema
+func getSchemaByForm(w http.ResponseWriter, r *http.Request) {}
 
 // POST /api/forms/{id}/submit
+func postSchemaData(w http.ResponseWriter, r *http.Request) {}
 
 // GET /api/forms/{id}/responses
+func getStatus(w http.ResponseWriter, r *http.Request) {}
 
 // PATCH /api/responses/{response_id}
+func updateStatus(w http.ResponseWriter, r *http.Request) {}

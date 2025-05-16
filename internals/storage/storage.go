@@ -9,7 +9,7 @@ import (
 )
 
 type StoragePG struct {
-	DB *sql.DB
+	db *sql.DB
 }
 
 func NewStoragePG(dataSourceName string) (*StoragePG, error) {
@@ -23,12 +23,12 @@ func NewStoragePG(dataSourceName string) (*StoragePG, error) {
 	}
 
 	log.Println("Database connection established")
-	return &StoragePG{DB: db}, nil
+	return &StoragePG{db: db}, nil
 }
 
 func (d *StoragePG) InitTables() error {
 	// Создаём тип enum для статуса фидбэка
-	if _, err := d.DB.Exec(`
+	if _, err := d.db.Exec(`
 		DO $$
 		BEGIN
 			IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'feedback_status') THEN
@@ -68,7 +68,7 @@ func (d *StoragePG) InitTables() error {
 	}
 
 	for _, table := range tables {
-		if _, err := d.DB.Exec(table); err != nil {
+		if _, err := d.db.Exec(table); err != nil {
 			return fmt.Errorf("failed to create table: %v", err)
 		}
 	}
@@ -77,6 +77,10 @@ func (d *StoragePG) InitTables() error {
 	return nil
 }
 
+func (s *StoragePG) GetDB() *sql.DB {
+	return s.db
+}
+
 func (d *StoragePG) Close() error {
-	return d.DB.Close()
+	return d.db.Close()
 }
