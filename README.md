@@ -103,4 +103,5 @@ PATCH | /api/responses/:response_id | Обновление статуса обр
 ```
 
 ## Модель данных и информация для RBS Feedbox.
-![Model](https://github.com/pupiba/feedbox/raw/main/docs/image.jpg)
+![Model](https://github.com/pupiba/feedbox/raw/main/docs/db_struct.jpg)
+![Templates](https://github.com/pupiba/feedbox/raw/main/docs/templates.png)
