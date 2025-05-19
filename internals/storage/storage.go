@@ -96,7 +96,7 @@ func (d *StoragePG) Close() error {
 }
 
 func (d *StoragePG) GetAllForms() ([]Form, error) {
-	if
+
 }
 
 func (d *StoragePG) CreateForm(form Form) (Form, error) {

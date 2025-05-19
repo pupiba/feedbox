@@ -1,16 +1,11 @@
 package transport
 
-import (
-	"feedbox/internals/model"
-	"net/http"
-)
-
 // GET /api/forms
-func getForms(w http.ResponseWriter, r *http.Request) {
-	data, err := model.GetForm()
-	postgres.GetFormByID(storage.db.GetDB())
+// func getForms(w http.ResponseWriter, r *http.Request) {
+// 	data, err := model.GetForm()
+// 	postgres.GetFormByID(storage.db.GetDB())
 
-}
+// }
 
 /*
 
