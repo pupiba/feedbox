@@ -2,11 +2,11 @@ package main
 
 import (
 	"feedbox/internals/storage"
-	"feedbox/internals/transport"
+	"os"
 
-	"feedbox/internals/storage/postgres"
 	"fmt"
-	"log"
+
+	"github.com/joho/godotenv"
 	// "fmt"
 	// "log"
 	// "net/http"
@@ -15,34 +15,43 @@ import (
 )
 
 func main() {
+
+	if err := godotenv.Load("config/.env"); err != nil {
+		panic(err)
+	}
+
 	// Инициализация хранилища
-	dsn := "user=pupiba dbname=feedbox password=qwerty port=5432 host=127.0.0.1"
-	db, err := storage.NewStoragePG(dsn)
+	db, err := storage.NewStoragePG(fmt.Sprintf("user=%s dbname=%s password=%s port=%s host=%s",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_HOST")))
 	if err != nil {
 		fmt.Printf("Failed to connect to database: %v", err)
 	}
 	defer db.Close()
 
-	if err := db.InitTables(); err != nil {
-		fmt.Printf("Failed to initialize tables: %v", err)
-	}
+	//////////// test for the projects table ////////////
 
-	var test postgres.Project = postgres.Project{
-		Title:       "hello",
-		Description: "hellohellohellohellohellohello",
-	}
+	// var test postgres.Project = postgres.Project{
+	// 	Title:       "hello",
+	// 	Description: "hellohellohellohellohellohello",
+	// }
 
-	for i := 1; i < 11; i++ {
-		test.Title = fmt.Sprintf("Проект №%d", i)
-		if err := test.Create(db.GetDB()); err != nil {
-			panic(err)
-		}
-	}
+	// for i := 1; i < 11; i++ {
+	// 	test.Title = fmt.Sprintf("Проект №%d", i)
+	// 	if err := test.Create(db.GetDB()); err != nil {
+	// 		panic(err)
+	// 	}
+	// }
 
-	log.Println("Data added to projects table")
+	// log.Println("Data added to projects table")
+
+	/////////////////////////////////////////////////////
 
 	// Запуск сервера
-	transport.NewServer()
+	// transport.NewServer(db)
 	// fmt.Println("Starting server on :8080")
 	// if err := http.ListenAndServe(":8080", server.Router()); err != nil {
 	// 	log.Panic("Server failed:", err)

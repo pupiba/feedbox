@@ -1,19 +1,27 @@
 package transport
 
 import (
-	"fmt"
+	"feedbox/internals/model"
 	"net/http"
 )
 
 // GET /api/forms
 func getForms(w http.ResponseWriter, r *http.Request) {
-	key := r.FormValue("key")
+	data, err := model.GetForm()
+	postgres.GetFormByID(storage.db.GetDB())
 
-	if key != "" {
-		fmt.Fprintln(w, "key: ", key)
-	} else {
-		fmt.Fprintln(w, "No Quary parm")
-	}
+}
+
+/*
+
+//// HTTP-METHODS ////
+
+// GET /api/forms
+func getForms(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+
+	_ limit := query.Get("limit")
+
 }
 
 // POST /api/forms
@@ -33,3 +41,4 @@ func getStatus(w http.ResponseWriter, r *http.Request) {}
 
 // PATCH /api/responses/{response_id}
 func updateStatus(w http.ResponseWriter, r *http.Request) {}
+*/

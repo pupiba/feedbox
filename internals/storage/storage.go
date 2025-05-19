@@ -8,35 +8,42 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// Хранилище
 type StoragePG struct {
 	db *sql.DB
 }
 
-func NewStoragePG(dataSourceName string) (*StoragePG, error) {
-	db, err := sql.Open("postgres", dataSourceName)
+// интерфейс хранилища
+type Storage interface {
+	// Получение списка всех форм
+	GetAllForms() ([]Form, error)
+	// Создание новой формы
+	CreateForm(form Form) (Form, error)
+	// Получение одной формы по ID
+	GetFormByID(id string) (Form, error)
+	// Получение схемы формы по ID формы
+	GetFormSchema(formID string) (map[string]interface{}, error)
+	// Отправка данных пользователем (создание ответа на форму)
+	SubmitFormResponse(formID string, response Feedback) (Feedback, error)
+	// Получение всех ответов по ID формы
+	GetFormResponses(formID string) ([]Feedback, error)
+	// Обновление статуса ответа
+	UpdateResponseStatus(responseID string, status string) (Feedback, error)
+	// Очистка БД
+	ClearDB() error
+	// Закрытие соединения с БД (если нужно)
+	Close() error
+}
+
+// Конструктор хранилища
+func NewStoragePG(dsn string) (*StoragePG, error) {
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %v", err)
 	}
 
 	if err = db.Ping(); err != nil {
 		return nil, fmt.Errorf("failed to ping database: %v", err)
-	}
-
-	log.Println("Database connection established")
-	return &StoragePG{db: db}, nil
-}
-
-func (d *StoragePG) InitTables() error {
-	// Создаём тип enum для статуса фидбэка
-	if _, err := d.db.Exec(`
-		DO $$
-		BEGIN
-			IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'feedback_status') THEN
-				CREATE TYPE feedback_status AS ENUM ('pending', 'reviewed', 'archived');
-			END IF;
-		END$$;
-	`); err != nil {
-		return fmt.Errorf("failed to create feedback_status type: %v", err)
 	}
 
 	tables := []string{
@@ -61,26 +68,57 @@ func (d *StoragePG) InitTables() error {
 			id SERIAL PRIMARY KEY,
 			form_id INTEGER NOT NULL,
 			data JSONB NOT NULL,
-			status feedback_status NOT NULL,
+			status VARCHAR(16) NOT NULL,
 			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (form_id) REFERENCES forms(id) ON DELETE CASCADE
 		)`,
 	}
 
 	for _, table := range tables {
-		if _, err := d.db.Exec(table); err != nil {
-			return fmt.Errorf("failed to create table: %v", err)
+		if _, err := db.Exec(table); err != nil {
+			return nil, fmt.Errorf("failed to create table: %v", err)
 		}
 	}
 
-	log.Println("Tables initialized successfully")
-	return nil
+	log.Println("Database connection established")
+	return &StoragePG{db: db}, nil
 }
 
-func (s *StoragePG) GetDB() *sql.DB {
-	return s.db
+func (d *StoragePG) ClearDB() error {
+	if _, err := d.db.Exec(`DROP TABLE IF EXISTS projects, forms, feedback CASCADE;`); err != nil {
+		return fmt.Errorf("failed to clear database: %v", err)
+	}
+	log.Println("The database tables have been deleted")
 }
 
 func (d *StoragePG) Close() error {
 	return d.db.Close()
+}
+
+func (d *StoragePG) GetAllForms() ([]Form, error) {
+	if
+}
+
+func (d *StoragePG) CreateForm(form Form) (Form, error) {
+
+}
+
+func (d *StoragePG) GetFormByID(id string) (Form, error) {
+
+}
+
+func (d *StoragePG) GetFormSchema(formID string) (map[string]interface{}, error) {
+
+}
+
+func (d *StoragePG) SubmitFormResponse(formID string, response Feedback) (Feedback, error) {
+
+}
+
+func (d *StoragePG) GetFormResponses(formID string) ([]Feedback, error) {
+
+}
+
+func (d *StoragePG) UpdateResponseStatus(responseID string, status string) (Feedback, error) {
+
 }

@@ -12,20 +12,24 @@ type Project struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
-func (p *Project) Create(db *sql.DB) error {
-	err := db.QueryRow(
-		`INSERT INTO projects (title, description)
-		VALUES ($1, $2)
-		RETURNING id, created_at`,
-		p.Title, p.Description,
-	).Scan(&p.ID, &p.CreatedAt)
-	return err
+type ProjectRepository struct {
+	db *sql.DB
 }
 
-func DeleteProject(db *sql.DB, id int) error {
-	_, err := db.Exec(
-		`DELETE FROM projects WHERE id = $1`,
-		id,
-	)
+func NewProjectRepository(db *sql.DB) *ProjectRepository {
+	return &ProjectRepository{db: db}
+}
+
+func (r *ProjectRepository) Create(project *Project) error {
+	return r.db.QueryRow(
+		`INSERT INTO projects (title, description)
+        VALUES ($1, $2)
+        RETURNING id, created_at`,
+		project.Title, project.Description,
+	).Scan(&project.ID, &project.CreatedAt)
+}
+
+func (r *ProjectRepository) Delete(id int) error {
+	_, err := r.db.Exec(`DELETE FROM projects WHERE id = $1`, id)
 	return err
 }
